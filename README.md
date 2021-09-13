@@ -9,7 +9,7 @@
 ## Features Checklist
 
 - Web API
-    - [] List downloaded files
+    - [x] List downloaded files
     - [] Receive file's stream and save it on disk
     - [] Notify storage stream progress of files being transfered to disk
     - [] Allowed formats: images, videos or audios

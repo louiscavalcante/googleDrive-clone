@@ -11,7 +11,7 @@
 		"test:cov": "set NODE_OPTIONS=--experimental-vm-modules && npx jest --no-cache --runInBand --coverage"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "luizcavalcante",
 	"license": "ISC",
 	"devDependencies": {
 		"jest": "^27.1.1"
@@ -19,6 +19,7 @@
 	"dependencies": {
 		"pino": "6.8",
 		"pino-pretty": "5.1",
+		"pretty-bytes": "5.6",
 		"socket.io": "4.1"
 	}
 }
