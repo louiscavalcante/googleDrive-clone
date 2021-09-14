@@ -1,5 +1,5 @@
-import https from 'https' 
-import fs from 'fs' 
+import https from 'https'
+import fs from 'fs'
 import { logger } from './logger.js'
 import { Server } from 'socket.io'
 import Routes from './routes.js'
@@ -12,10 +12,7 @@ const localHostSSL = {
 }
 
 const routes = new Routes()
-const server = https.createServer(
-    localHostSSL,
-    routes.handler.bind(routes)
-)
+const server = https.createServer(localHostSSL, routes.handler.bind(routes))
 
 const io = new Server(server, {
 	cors: {

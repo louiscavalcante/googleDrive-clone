@@ -30,7 +30,7 @@ describe('#FileHelper', () => {
 			const mockUser = 'Anniballi'
 			process.env.USERNAME = mockUser
 			const filename = 'file.png'
-            const tmp = process.env.TMP
+			const tmp = process.env.TMP
 
 			jest.spyOn(fs.promises, fs.promises.readdir.name).mockResolvedValue([filename])
 
