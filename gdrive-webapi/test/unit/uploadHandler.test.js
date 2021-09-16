@@ -6,6 +6,7 @@ import { logger } from '../../src/logger.js'
 import UploadHandler from '../../src/uploadHandler.js'
 import TestUtil from './_util/testUtil.js'
 import Routes from '../../src/routes.js'
+import { SSL_OP_CRYPTOPRO_TLSEXT_BUG } from 'constants'
 
 describe('#UploadHandler test suite', () => {
 	const ioObj = {
@@ -100,6 +101,56 @@ describe('#UploadHandler test suite', () => {
 			// calling the function target in each chunk
 			expect(onWrite).toBeCalledTimes(messages.length)
 			expect(onWrite.mock.calls.join()).toEqual(messages.join())
+		})
+
+		test('given message timerDelay as 2s it should emit only two messages during 3s period', async () => {
+			jest.spyOn(ioObj, ioObj.emit.name)
+
+			const day = '2021-07-01 01:01'
+			// Date.now do this.lastMessageSent in handleBytes
+			const onFirstLastMessageSent = TestUtil.getTimeFromDate(`${day}:00`)
+
+			// -> first hello arrived
+			const onFirstCanExecute = TestUtil.getTimeFromDate(`${day}:02`)
+            const onSecondUpdateLastMessageSent = onFirstCanExecute
+
+			// -> second hello is out of the time window
+			const onSecondCanExecute = TestUtil.getTimeFromDate(`${day}:03`)
+
+			// -> world
+			const onThirdCanExecute = TestUtil.getTimeFromDate(`${day}:04`)
+            
+            
+            TestUtil.mockDateNow(
+                [
+                    onFirstLastMessageSent,
+                    onFirstCanExecute,
+                    onSecondUpdateLastMessageSent,
+                    onSecondCanExecute,
+                    onThirdCanExecute
+                ]
+            )
+
+			const messages = ['hello', 'hello', 'world']
+			const filename = 'filename.avi'
+			const expectedMessageSent = 2
+			const messageTimeDelay = 2000
+
+			const source = TestUtil.generateReadableStream(messages)
+			const handler = new UploadHandler({
+				messageTimeDelay,
+				io: ioObj,
+				socketId: '01',
+			})
+
+			await pipeline(source, handler.handleFileBytes(filename))
+
+			expect(ioObj.emit).toHaveBeenCalledTimes(expectedMessageSent)
+
+			const [firstCallResult, secondCallResult] = ioObj.emit.mock.calls
+
+			expect(firstCallResult).toEqual([handler.ON_UPLOAD_EVENT, { processedAlready: 'hello'.length, filename }])
+			expect(secondCallResult).toEqual([handler.ON_UPLOAD_EVENT, { processedAlready: messages.join('').length, filename }])
 		})
 	})
 
