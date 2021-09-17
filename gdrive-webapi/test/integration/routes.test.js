@@ -9,7 +9,7 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 
 describe('#Routes Integration Test', () => {
-	let defaultDownloadsFolder = process.env.TMP
+    let defaultDownloadsFolder = ''
 	beforeAll(async () => {
 		defaultDownloadsFolder = await fs.promises.mkdtemp(join(tmpdir(), 'downloads-'))
 	})
@@ -57,6 +57,10 @@ describe('#Routes Integration Test', () => {
 			await routes.handler(...defaultParams.values())
 			const dirAfterRun = await fs.promises.readdir(defaultDownloadsFolder)
 			expect(dirAfterRun).toEqual([filename])
+            
+            expect(defaultParams.response.writeHead).toHaveBeenCalledWith(200)
+            const expectedResult = JSON.stringify({ result: 'Files uploaded with success!' })
+            expect(defaultParams.response.end).toHaveBeenCalledWith(expectedResult)
 		})
 	})
 })
