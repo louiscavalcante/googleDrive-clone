@@ -1,8 +1,7 @@
 import Busboy from 'busboy'
 import fs from 'fs'
 import { pipeline } from 'stream/promises'
-import { logger } from './logger'
-
+import { logger } from './logger.js'
 export default class UploadHandler {
 	constructor({ io, socketId, downloadsFolder, messageTimeDelay = 200 }) {
 		this.io = io
@@ -24,12 +23,14 @@ export default class UploadHandler {
 
 			for await (const chunk of source) {
 				yield chunk
+
 				processedAlready += chunk.length
 				if (!this.canExecute(this.lastMessageSent)) {
 					continue
 				}
 
-                this.lastMessageSent = Date.now()
+				this.lastMessageSent = Date.now()
+
 				this.io.to(this.socketId).emit(this.ON_UPLOAD_EVENT, { processedAlready, filename })
 				logger.info(`File [${filename}] got ${processedAlready} bytes to ${this.socketId}`)
 			}
@@ -37,7 +38,6 @@ export default class UploadHandler {
 
 		return handleData.bind(this)
 	}
-
 	async onFile(fieldname, file, filename) {
 		const saveTo = `${this.downloadsFolder}\\${filename}`
 
@@ -55,9 +55,9 @@ export default class UploadHandler {
 
 	registerEvents(headers, onFinish) {
 		const busboy = new Busboy({ headers })
-
 		busboy.on('file', this.onFile.bind(this))
 		busboy.on('finish', onFinish)
+
 		return busboy
 	}
 }

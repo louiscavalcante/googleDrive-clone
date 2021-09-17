@@ -10,10 +10,10 @@
 
 - Web API
     - [x] List downloaded files
-    - [] Receive file's stream and save it on disk
+    - [x] Receive file's stream and save it on disk
     - [x] Notify storage stream progress of files being transfered to disk
-    - [] Allowed formats: images, videos or audios
-    - [] Must have 100% code coverage
+    - [x] Allowed formats: images, videos or audios
+    - [x] Must have 100% code coverage
 
 - Web App 
     - [] List downloaded files

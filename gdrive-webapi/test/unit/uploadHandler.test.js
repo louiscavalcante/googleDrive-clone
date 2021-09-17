@@ -5,8 +5,7 @@ import { pipeline } from 'stream/promises'
 import { logger } from '../../src/logger.js'
 import UploadHandler from '../../src/uploadHandler.js'
 import TestUtil from '../_util/testUtil.js'
-import Routes from '../../src/routes.js'
-import { SSL_OP_CRYPTOPRO_TLSEXT_BUG } from 'constants'
+import Routes from './../../src/routes.js'
 
 describe('#UploadHandler test suite', () => {
 	const ioObj = {
@@ -32,7 +31,7 @@ describe('#UploadHandler test suite', () => {
 			const onFinish = jest.fn()
 			const busboyInstance = uploadHandler.registerEvents(headers, onFinish)
 
-			const fileStream = TestUtil.generateReadableStream(['chunck', 'of', 'data'])
+			const fileStream = TestUtil.generateReadableStream(['chunk', 'of', 'data'])
 			busboyInstance.emit('file', 'fieldname', fileStream, 'filename.txt')
 
 			busboyInstance.listeners('finish')[0].call()
@@ -108,30 +107,21 @@ describe('#UploadHandler test suite', () => {
 
 			const day = '2021-07-01 01:01'
 			const twoSecondsPeriod = 2000
-            
+
 			// Date.now do this.lastMessageSent in handleBytes
 			const onFirstLastMessageSent = TestUtil.getTimeFromDate(`${day}:00`)
 
 			// -> first hello arrived
 			const onFirstCanExecute = TestUtil.getTimeFromDate(`${day}:02`)
-            const onSecondUpdateLastMessageSent = onFirstCanExecute
+			const onSecondUpdateLastMessageSent = onFirstCanExecute
 
 			// -> second hello is out of the time window
 			const onSecondCanExecute = TestUtil.getTimeFromDate(`${day}:03`)
 
 			// -> world
 			const onThirdCanExecute = TestUtil.getTimeFromDate(`${day}:04`)
-            
-            
-            TestUtil.mockDateNow(
-                [
-                    onFirstLastMessageSent,
-                    onFirstCanExecute,
-                    onSecondUpdateLastMessageSent,
-                    onSecondCanExecute,
-                    onThirdCanExecute
-                ]
-            )
+
+			TestUtil.mockDateNow([onFirstLastMessageSent, onFirstCanExecute, onSecondUpdateLastMessageSent, onSecondCanExecute, onThirdCanExecute])
 
 			const messages = ['hello', 'hello', 'world']
 			const filename = 'filename.avi'
@@ -172,8 +162,8 @@ describe('#UploadHandler test suite', () => {
 			const result = uploadHandler.canExecute(lastExecution)
 			expect(result).toBeTruthy()
 		})
-
-		test('should return false when time is not later than specified delay', () => {
+        
+		test('should return false when time isnt later than specified delay', () => {
 			const timerDelay = 3000
 			const uploadHandler = new UploadHandler({
 				io: {},

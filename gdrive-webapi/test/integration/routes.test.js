@@ -1,7 +1,8 @@
-import { describe, test, expect, jest, beforeAll, afterAll } from '@jest/globals'
+import { describe, test, expect, beforeAll, afterAll, jest } from '@jest/globals'
 import fs from 'fs'
 import FileHelper from '../../src/fileHelper.js'
-import Routes from '../../src/routes.js'
+
+import Routes from './../../src/routes.js'
 import FormData from 'form-data'
 import TestUtil from '../_util/testUtil.js'
 import { logger } from '../../src/logger.js'
@@ -9,7 +10,7 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 
 describe('#Routes Integration Test', () => {
-    let defaultDownloadsFolder = ''
+	let defaultDownloadsFolder = ''
 	beforeAll(async () => {
 		defaultDownloadsFolder = await fs.promises.mkdtemp(join(tmpdir(), 'downloads-'))
 	})
@@ -29,7 +30,7 @@ describe('#Routes Integration Test', () => {
 		}
 
 		test('should upload file to the folder', async () => {
-			const filename = 'mocksTest.jpg'
+			const filename = 'semanajsexpert.png'
 			const fileStream = fs.createReadStream(`./test/integration/mocks/${filename}`)
 			const response = TestUtil.generateWritableStream(() => {})
 
@@ -42,6 +43,7 @@ describe('#Routes Integration Test', () => {
 					method: 'POST',
 					url: '?socketId=10',
 				}),
+
 				response: Object.assign(response, {
 					setHeader: jest.fn(),
 					writeHead: jest.fn(),
@@ -57,10 +59,10 @@ describe('#Routes Integration Test', () => {
 			await routes.handler(...defaultParams.values())
 			const dirAfterRun = await fs.promises.readdir(defaultDownloadsFolder)
 			expect(dirAfterRun).toEqual([filename])
-            
-            expect(defaultParams.response.writeHead).toHaveBeenCalledWith(200)
-            const expectedResult = JSON.stringify({ result: 'Files uploaded with success!' })
-            expect(defaultParams.response.end).toHaveBeenCalledWith(expectedResult)
+
+			expect(defaultParams.response.writeHead).toHaveBeenCalledWith(200)
+			const expectedResult = JSON.stringify({ result: 'Files uploaded with success! ' })
+			expect(defaultParams.response.end).toHaveBeenCalledWith(expectedResult)
 		})
 	})
 })
