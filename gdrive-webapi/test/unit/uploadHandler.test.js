@@ -4,7 +4,7 @@ import { resolve } from 'path'
 import { pipeline } from 'stream/promises'
 import { logger } from '../../src/logger.js'
 import UploadHandler from '../../src/uploadHandler.js'
-import TestUtil from './_util/testUtil.js'
+import TestUtil from '../_util/testUtil.js'
 import Routes from '../../src/routes.js'
 import { SSL_OP_CRYPTOPRO_TLSEXT_BUG } from 'constants'
 
@@ -103,10 +103,12 @@ describe('#UploadHandler test suite', () => {
 			expect(onWrite.mock.calls.join()).toEqual(messages.join())
 		})
 
-		test('given message timerDelay as 2s it should emit only two messages during 3s period', async () => {
+		test('given message timerDelay as 2s it should emit only two messages during 2s period', async () => {
 			jest.spyOn(ioObj, ioObj.emit.name)
 
 			const day = '2021-07-01 01:01'
+			const twoSecondsPeriod = 2000
+            
 			// Date.now do this.lastMessageSent in handleBytes
 			const onFirstLastMessageSent = TestUtil.getTimeFromDate(`${day}:00`)
 
@@ -134,11 +136,10 @@ describe('#UploadHandler test suite', () => {
 			const messages = ['hello', 'hello', 'world']
 			const filename = 'filename.avi'
 			const expectedMessageSent = 2
-			const messageTimeDelay = 2000
 
 			const source = TestUtil.generateReadableStream(messages)
 			const handler = new UploadHandler({
-				messageTimeDelay,
+				messageTimeDelay: twoSecondsPeriod,
 				io: ioObj,
 				socketId: '01',
 			})
